@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DoodleVerse is a fun and free online drawing website offering daily art challenges, relaxing soundscapes, and an easy way to save your digital doodles.">
+    <meta name="keywords" content="drawing, doodle, art, creative, relax, online drawing, digital art, drawing challenge">
+    <title>DoodleVerse — Draw, Relax & Share!</title>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #00b894;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f6fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .canvas-container {
+            position: relative;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background-color: white;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            align-items: center;
+        }
+
+        button, .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        button:active, .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+
+        .btn-accent:hover {
+            background-color: #e84393;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #00cec9;
+        }
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+
+        input[type="range"] {
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .tool-label {
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+            font-weight: 500;
+        }
+
+        .daily-prompt {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .daily-prompt h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary-color);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .zen-mode {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .sound-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .sound-btn {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tools {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .tool-group {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            input[type="range"] {
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DoodleVerse</h1>
+        <p class="tagline">Draw, Relax & Share!</p>
+    </header>
+
+    <main>
+        <section id="drawing-section">
+            <h2>Drawing Canvas</h2>
+            <div class="canvas-container">
+                <canvas id="drawingCanvas" width="800" height="500"></canvas>
+            </div>
+            
+            <div class="tools">
+                <div class="tool-group">
+                    <span class="tool-label">Color:</span>
+                    <input type="color" id="colorPicker" value="#000000">
+                </div>
+                
+                <div class="tool-group">
+                    <span class="tool-label">Size:</span>
+                    <input type="range" id="brushSize" min="1" max="50" value="5">
+                    <span id="brushSizeValue">5</span>
+                </div>
+                
+                <button id="brushBtn" class="btn">Brush</button>
+                <button id="eraserBtn" class="btn btn-secondary">Eraser</button>
+                <button id="clearBtn" class="btn btn-accent">Clear Canvas</button>
+                <button id="undoBtn" class="btn btn-secondary">Undo</button>
+                <button id="redoBtn" class="btn btn-secondary">Redo</button>
+                <button id="downloadBtn" class="btn btn-success">Download Drawing</button>
+            </div>
+        </section>
+
+        <section id="daily-challenge">
+            <h2>Daily Drawing Challenge</h2>
+            <div class="daily-prompt">
+                <h3 id="dailyPrompt">Today's Challenge:</h3>
+                <p id="promptText"></p>
+            </div>
+        </section>
+
+        <section id="timer-section">
+            <h2>Timer Mode</h2>
+            <p>Challenge yourself with timed drawing sessions!</p>
+            
+            <div class="timer-display">
+                <span id="minutes">00</span>:<span id="seconds">00</span>
+            </div>
+            
+            <div class="timer-controls">
+                <button id="timer1Min" class="btn">1 Minute</button>
+                <button id="timer3Min" class="btn">3 Minutes</button>
+                <button id="timerUnlimited" class="btn">Unlimited</button>
+                <button id="timerStop" class="btn btn-accent">Stop Timer</button>
+            </div>
+        </section>
+
+        <section id="zen-mode">
+            <h2>Zen Mode</h2>
+            <p>Relaxing sounds to help you focus on your creativity.</p>
+            
+            <div class="zen-mode">
+                <div class="sound-options">
+                    <button id="rainSound" class="btn sound-btn">Rain Sounds</button>
+                    <button id="oceanSound" class="btn sound-btn">Ocean Waves</button>
+                    <button id="forestSound" class="btn sound-btn">Forest Ambience</button>
+                    <button id="stopSound" class="btn btn-accent sound-btn">Stop Sound</button>
+                </div>
+                
+                <audio id="rainAudio" loop>
+                    <source src="https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-1240.mp3" type="audio/mpeg">
+                </audio>
+                <audio id="oceanAudio" loop>
+                    <source src="https://assets.mixkit.co/sfx/preview/mixkit-waves-coming-to-shore-2074.mp3" type="audio/mpeg">
+                </audio>
+                <audio id="forestAudio" loop>
+                    <source src="https://assets.mixkit.co/sfx/preview/mixkit-forest-ambience-1687.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>DoodleVerse &copy; <span id="currentYear"></span> | A free online drawing experience</p>
+    </footer>
+
+    <script>
+        // Canvas Drawing Functionality
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const brushSize = document.getElementById('brushSize');
+        const brushSizeValue = document.getElementById('brushSizeValue');
+        const brushBtn = document.getElementById('brushBtn');
+        const eraserBtn = document.getElementById('eraserBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Adjust canvas size for mobile devices
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth - 2; // Account for border
+            canvas.height = Math.min(500, window.innerHeight * 0.6);
+            redrawCanvas();
+        }
+
+        window.addEventListener('load', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas);
+
+        // Drawing state
+        let isDrawing = false;
+        let currentColor = colorPicker.value;
+        let currentSize = brushSize.value;
+        let currentTool = 'brush';
+        let undoStack = [];
+        let redoStack = [];
+
+        // Save canvas state to undo stack
+        function saveState() {
+            undoStack.push(canvas.toDataURL());
+            redoStack = []; // Clear redo stack when new action is performed
+            if (undoStack.length > 20) undoStack.shift(); // Limit undo history
+        }
+
+        // Redraw canvas from image data
+        function redrawCanvas() {
+            const img = new Image();
+            img.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+            if (undoStack.length > 0) {
+                img.src = undoStack[undoStack.length - 1];
+            }
+        }
+
+        // Initialize canvas with white background
+        function initCanvas() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            saveState();
+        }
+
+        initCanvas();
+
+        // Drawing functions
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+            saveState();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            if (currentTool === 'eraser') {
+                ctx.strokeStyle = 'white';
+            } else {
+                ctx.strokeStyle = currentColor;
+            }
+            
+            ctx.lineWidth = currentSize;
+            
+            // Get correct position for both mouse and touch events
+            let x, y;
+            if (e.type.includes('touch')) {
+                const rect = canvas.getBoundingClientRect();
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.offsetX;
+                y = e.offsetY;
+            }
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        // Event listeners for drawing
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrawing(e);
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            draw(e);
+        });
+        
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            stopDrawing();
+        });
+
+        // Tool controls
+        colorPicker.addEventListener('input', (e) => {
+            currentColor = e.target.value;
+            currentTool = 'brush';
+            brushBtn.classList.add('btn');
+            eraserBtn.classList.remove('btn');
+            eraserBtn.classList.add('btn-secondary');
+        });
+
+        brushSize.addEventListener('input', (e) => {
+            currentSize = e.target.value;
+            brushSizeValue.textContent = currentSize;
+        });
+
+        brushBtn.addEventListener('click', () => {
+            currentTool = 'brush';
+            brushBtn.classList.add('btn');
+            eraserBtn.classList.remove('btn');
+            eraserBtn.classList.add('btn-secondary');
+        });
+
+        eraserBtn.addEventListener('click', () => {
+            currentTool = 'eraser';
+            eraserBtn.classList.add('btn');
+            brushBtn.classList.remove('btn');
+            brushBtn.classList.add('btn-secondary');
+        });
+
+        clearBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the canvas?')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                saveState();
+            }
+        });
+
+        undoBtn.addEventListener('click', () => {
+            if (undoStack.length > 1) {
+                redoStack.push(undoStack.pop());
+                redrawCanvas();
+            }
+        });
+
+        redoBtn.addEventListener('click', () => {
+            if (redoStack.length > 0) {
+                undoStack.push(redoStack.pop());
+                redrawCanvas();
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'doodleverse-drawing-' + new Date().toISOString().slice(0, 10) + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // Daily Challenge
+        const dailyPrompts = [
+            "Draw your mood using only two colors!",
+            "Sketch your dream pet in under 3 minutes!",
+            "Create a landscape from an alien planet.",
+            "Draw your favorite food in cartoon style.",
+            "Illustrate what happiness looks like to you.",
+            "Design a new emoji that doesn't exist yet.",
+            "Draw your current view but with one fantastical change.",
+            "Sketch a self-portrait using only geometric shapes.",
+            "Create a pattern that represents your personality.",
+            "Draw something that makes you feel nostalgic.",
+            "Illustrate your favorite childhood memory.",
+            "Design a futuristic vehicle for everyday use.",
+            "Draw an animal hybrid (e.g., cat + elephant).",
+            "Sketch a scene from your favorite book.",
+            "Create an abstract representation of your favorite song.",
+            "Draw what you think the future will look like.",
+            "Illustrate your perfect day in three panels.",
+            "Design a new mythical creature.",
+            "Draw your favorite season as a character.",
+            "Sketch a cityscape from a bird's eye view.",
+            "Create a mandala with personal symbolism.",
+            "Draw an object that represents your current goal.",
+            "Illustrate a word without using any letters.",
+            "Design a tattoo you'd actually get.",
+            "Sketch a scene from an unusual perspective."
+        ];
+
+        function getDailyPrompt() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            const promptIndex = dayOfYear % dailyPrompts.length;
+            return dailyPrompts[promptIndex];
+        }
+
+        document.getElementById('promptText').textContent = getDailyPrompt();
+
+        // Timer Functionality
+        const minutesDisplay = document.getElementById('minutes');
+        const secondsDisplay = document.getElementById('seconds');
+        const timer1Min = document.getElementById('timer1Min');
+        const timer3Min = document.getElementById('timer3Min');
+        const timerUnlimited = document.getElementById('timerUnlimited');
+        const timerStop = document.getElementById('timerStop');
+
+        let timerInterval;
+        let totalSeconds = 0;
+
+        function startTimer(seconds) {
+            stopTimer();
+            totalSeconds = seconds;
+            updateTimerDisplay();
+            
+            if (seconds > 0) {
+                timerInterval = setInterval(() => {
+                    totalSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (totalSeconds <= 0) {
+                        stopTimer();
+                        alert("Time's up! Great job drawing!");
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            
+            minutesDisplay.textContent = minutes.toString().padStart(2, '0');
+            secondsDisplay.textContent = seconds.toString().padStart(2, '0');
+        }
+
+        timer1Min.addEventListener('click', () => startTimer(60));
+        timer3Min.addEventListener('click', () => startTimer(180));
+        timerUnlimited.addEventListener('click', () => startTimer(0));
+        timerStop.addEventListener('click', stopTimer);
+
+        // Zen Mode Audio
+        const rainAudio = document.getElementById('rainAudio');
+        const oceanAudio = document.getElementById('oceanAudio');
+        const forestAudio = document.getElementById('forestAudio');
+        const rainSoundBtn = document.getElementById('rainSound');
+        const oceanSoundBtn = document.getElementById('oceanSound');
+        const forestSoundBtn = document.getElementById('forestSound');
+        const stopSoundBtn = document.getElementById('stopSound');
+
+        function stopAllSounds() {
+            rainAudio.pause();
+            oceanAudio.pause();
+            forestAudio.pause();
+            rainAudio.currentTime = 0;
+            oceanAudio.currentTime = 0;
+            forestAudio.currentTime = 0;
+            
+            rainSoundBtn.classList.remove('btn-success');
+            oceanSoundBtn.classList.remove('btn-success');
+            forestSoundBtn.classList.remove('btn-success');
+        }
+
+        rainSoundBtn.addEventListener('click', () => {
+            stopAllSounds();
+            rainAudio.play();
+            rainSoundBtn.classList.add('btn-success');
+        });
+
+        oceanSoundBtn.addEventListener('click', () => {
+            stopAllSounds();
+            oceanAudio.play();
+            oceanSoundBtn.classList.add('btn-success');
+        });
+
+        forestSoundBtn.addEventListener('click', () => {
+            stopAllSounds();
+            forestAudio.play();
+            forestSoundBtn.classList.add('btn-success');
+        });
+
+        stopSoundBtn.addEventListener('click', stopAllSounds);
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
